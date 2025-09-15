@@ -7,6 +7,9 @@ class Settings(BaseSettings):
     embedding_dim: int = 384
     recreate_collection: bool = True
 
+    chunk_size: int = 512
+    chunk_overlap: int = 50
+
     class Config:
         env_file = ".env"
         env_file_encoding = "utf-8"

@@ -1,0 +1,13 @@
+Vector databases are specialized systems designed to store and search high-dimensional embeddings.
+They support similarity search using distance metrics such as cosine or Euclidean distance.
+Popular options include Qdrant, Pinecone, Weaviate, and Milvus.
+
+A vector database is a key component in Retrieval-Augmented Generation (RAG).
+It enables fast nearest-neighbor search, allowing an application to retrieve semantically
+relevant document chunks for a user query.
+
+Key features to consider when choosing a vector database:
+• Scalability for billions of vectors
+• Support for metadata filters
+• High-performance approximate nearest neighbor (ANN) search
+• Easy integration with common machine-learning or LLM frameworks

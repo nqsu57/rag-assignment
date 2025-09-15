@@ -4,3 +4,4 @@ qdrant-client
 llama-index
 python-dotenv
 pydantic-settings
+unstructured
