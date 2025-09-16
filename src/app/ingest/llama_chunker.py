@@ -19,6 +19,9 @@ def load_documents_from_dir(data_dir: Path) -> List[Document]:
         raise FileNotFoundError(f"{data_dir} not found")
     reader = SimpleDirectoryReader(str(data_dir))
     docs = reader.load_data()
+    if not docs:
+        logger.warning(f"No documents found in {data_dir}") 
+        return [] 
     logger.info(f"Loaded {len(docs)} documents from {data_dir}")
     return docs
 
@@ -33,6 +36,9 @@ def chunk_documents(
     effective_chunk_size = chunk_size or DEFAULT_CHUNK_SIZE
     effective_overlap = chunk_overlap or DEFAULT_CHUNK_OVERLAP
 
+    if effective_overlap >= effective_chunk_size:
+        raise ValueError("chunk_overlap must be smaller than chunk_size")
+
     if use_sentence_splitter:
         parser = SentenceSplitter(chunk_size=effective_chunk_size, chunk_overlap=effective_overlap)
     else:
@@ -43,23 +49,34 @@ def chunk_documents(
     logger.info(f"Parser produced {len(nodes)} nodes (chunks)")
 
     chunks: List[Dict[str, Any]] = []
+    # for i, node in enumerate(nodes):
+    #     # node likely has .text and .extra_info / .metadata depending on LlamaIndex version
+    #     text = getattr(node, "text", None) or getattr(node, "get_text", lambda: str(node))()
+    #     metadata = {}
+    #     # try common metadata attributes; keep it defensive
+    #     if hasattr(node, "doc_id"):
+    #         metadata["doc_id"] = getattr(node, "doc_id")
+    #     if hasattr(node, "extra_info"):
+    #         metadata.update(getattr(node, "extra_info") or {})
+    #     if hasattr(node, "metadata"):
+    #         # some versions store Document.metadata
+    #         metadata.update(getattr(node, "metadata") or {})
+
+    #     chunk_id = f"chunk-{i}"
+    #     chunks.append({"id": chunk_id, "text": text, "metadata": metadata})
+
     for i, node in enumerate(nodes):
-        # node likely has .text and .extra_info / .metadata depending on LlamaIndex version
         text = getattr(node, "text", None) or getattr(node, "get_text", lambda: str(node))()
-        metadata = {}
-        # try common metadata attributes; keep it defensive
+        # merge metadata: extra_info trước, metadata sau
+        meta: dict = {}
+        if hasattr(node, "extra_info") and getattr(node, "extra_info"):
+            meta.update(getattr(node, "extra_info"))
+        if hasattr(node, "metadata") and getattr(node, "metadata"):
+            meta.update(getattr(node, "metadata"))
         if hasattr(node, "doc_id"):
-            metadata["doc_id"] = getattr(node, "doc_id")
-        if hasattr(node, "extra_info"):
-            metadata.update(getattr(node, "extra_info") or {})
-        if hasattr(node, "metadata"):
-            # some versions store Document.metadata
-            metadata.update(getattr(node, "metadata") or {})
-
-        chunk_id = f"chunk-{i}"
-        chunks.append({"id": chunk_id, "text": text, "metadata": metadata})
+            meta.setdefault("doc_id", getattr(node, "doc_id"))
+        chunks.append({"id": f"chunk-{i}", "text": text, "metadata": meta})
     return chunks
-
 
 def save_chunks(chunks: List[Dict[str, Any]], out_dir: Path, basename: str = "chunks.json"):
     out_dir = Path(out_dir)
