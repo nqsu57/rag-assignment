@@ -30,14 +30,14 @@ def chunk_documents(
     use_sentence_splitter: bool = False,
 ) -> List[Dict[str, Any]]:
  
-    cs = chunk_size or DEFAULT_CHUNK_SIZE
-    co = chunk_overlap or DEFAULT_CHUNK_OVERLAP
+    effective_chunk_size = chunk_size or DEFAULT_CHUNK_SIZE
+    effective_overlap = chunk_overlap or DEFAULT_CHUNK_OVERLAP
 
     if use_sentence_splitter:
-        parser = SentenceSplitter(chunk_size=cs, chunk_overlap=co)
+        parser = SentenceSplitter(chunk_size=effective_chunk_size, chunk_overlap=effective_overlap)
     else:
         # SimpleNodeParser.from_defaults uses SentenceSplitter by default internally
-        parser = SimpleNodeParser.from_defaults(chunk_size=cs, chunk_overlap=co)
+        parser = SimpleNodeParser.from_defaults(chunk_size=effective_chunk_size, chunk_overlap=effective_overlap)
 
     nodes = parser.get_nodes_from_documents(docs)
     logger.info(f"Parser produced {len(nodes)} nodes (chunks)")

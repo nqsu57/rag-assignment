@@ -12,3 +12,7 @@ __pycache__/
 
 # Logs
 *.log
+
+# Bỏ qua output chunk
+out_chunks/
+chunks.json
