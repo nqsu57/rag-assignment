@@ -6,6 +6,7 @@ from qdrant_client import QdrantClient
 from src.app.config.settings import settings
 from src.app.services.qdrant_collection import create_collection
 from src.app.api.routes_chunk import router_chunks
+from src.app.api.call_bot import call_bot_router
 
 
 logger = logging.getLogger(__name__)
@@ -15,14 +16,14 @@ logging.basicConfig(level=logging.INFO,
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     # Connecting to Qdrant
-    client = QdrantClient(host=settings.qdrant_host, port=settings.qdrant_port) 
+    client = QdrantClient(host=settings.QDRANT_HOST, port=settings.QDRANT_PORT) 
 
     #retry/backoff nhỏ đề phòng Qdrant khởi chậm
     max_tries = 5
     for attempt in range(1, max_tries + 1):
         try:
             create_collection(client)
-            logger.info("Qdrant collection ready: %s", settings.qdrant_collection)
+            logger.info("Qdrant collection ready: %s", settings.QDRANT_COLLECTION)
             break
         except Exception as exc:
             logger.warning("Qdrant not ready (%d/%d): %s", attempt, max_tries, exc)
@@ -48,6 +49,8 @@ async def lifespan(app: FastAPI):
 app = FastAPI(title="Minimal RAG with FastAPI & Qdrant", version="1.0.0", lifespan=lifespan)
 
 app.include_router(router_chunks, prefix="/api")
+app.include_router(call_bot_router, prefix="/api")
+
 
 
 def get_qdrant_client(request: Request) -> QdrantClient:
@@ -62,6 +65,6 @@ async def health_check(client: QdrantClient = Depends(get_qdrant_client)):
     """
     return {
         "status": "ok",
-        "collection": settings.qdrant_collection,
+        "collection": settings.QDRANT_COLLECTION,
         "qdrant_connected": client is not None,
     }
