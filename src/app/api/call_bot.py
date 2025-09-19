@@ -8,23 +8,10 @@ from src.app.services.embedder import embed_texts
 from src.app.services.vector_store import QdrantStore
 from src.app.services.prompt_builder import build_prompt
 from src.app.services.llm_service import generate_answer
+from src.app.schema.call_bot_schema import CallBotRequest, CallBotResponse
 
 logger = get_logger("call_bot")
 call_bot_router = APIRouter()
-
-class CallBotRequest(BaseModel):
-    query: str = Field(..., min_length=1)
-    top_k: int | None = Field(None, ge=1, le=50)
-
-class RetrievedItem(BaseModel):
-    id: str
-    score: float | None
-    source: str | None
-    document_id: str | None
-
-class CallBotResponse(BaseModel):
-    answer: str
-    retrieved: List[RetrievedItem]
 
 def get_qdrant_store() -> QdrantStore:
     return QdrantStore()
@@ -48,7 +35,6 @@ async def call_bot(req: CallBotRequest, store: QdrantStore = Depends(get_qdrant_
     except Exception:
         logger.exception("Vector search failed")
         raise HTTPException(status_code=503, detail="Vector search error")
-
 
     SIM_THRESHOLD = 0.7
     hits = [h for h in hits if h.get("score", 0) >= SIM_THRESHOLD]
