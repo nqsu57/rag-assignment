@@ -5,3 +5,4 @@ llama-index
 python-dotenv
 pydantic-settings
 unstructured
+sentence-transformers
