@@ -3,12 +3,12 @@ from pydantic import BaseModel, Field
 import asyncio
 from typing import List, Dict
 from src.app.utils.logger import get_logger
-from src.app.config.settings import settings
+from src.app.models.settings import settings
 from src.app.services.embedder import embed_texts
 from src.app.services.vector_store import QdrantStore
 from src.app.services.prompt_builder import build_prompt
 from src.app.services.llm_service import generate_answer
-from src.app.schema.call_bot_schema import CallBotRequest, CallBotResponse
+from src.app.models.call_bot_schema import CallBotRequest, CallBotResponse
 
 logger = get_logger("call_bot")
 call_bot_router = APIRouter()

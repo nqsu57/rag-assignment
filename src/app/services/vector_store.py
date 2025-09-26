@@ -2,7 +2,7 @@ from qdrant_client import QdrantClient
 from qdrant_client.http import models as rest
 from typing import List, Dict, Any
 import uuid
-from src.app.config.settings import settings
+from src.app.models.settings import settings
 
 class QdrantStore:
     def __init__(self, host: str = settings.QDRANT_HOST, port: int = settings.QDRANT_PORT):
@@ -20,9 +20,12 @@ class QdrantStore:
         except Exception as e:
             raise RuntimeError(f"Qdrant ensure_collection failed: {e}") from e
 
-    def upsert_points(self, collection_name: str, vectors: List[List[float]], payloads: List[Dict[str, Any]]) -> List[str]:
+    def upsert_points(self, collection_name: str, vectors: List[List[float]], payloads: List[Dict[str, Any]], ids: List[str] | None = None, skip_existing: bool = True) -> List[str]:
         if len(vectors) != len(payloads):
             raise ValueError("vectors and payloads length mismatch")
+        if ids and len(ids) != len(vectors):
+            raise ValueError("ids length mismatch")
+        
         points = []
         ids: List[str] = []
         for i, vec in enumerate(vectors):

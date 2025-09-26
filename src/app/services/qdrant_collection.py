@@ -1,6 +1,6 @@
 from qdrant_client.http import models as rest
 from qdrant_client import QdrantClient
-from src.app.config.settings import settings
+from src.app.models.settings import settings
 from src.app.utils.logger import get_logger
 from qdrant_client.http import models as rest
 

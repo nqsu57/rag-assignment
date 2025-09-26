@@ -3,7 +3,7 @@ import asyncio
 import logging
 from fastapi import FastAPI, Request, Depends
 from qdrant_client import QdrantClient
-from src.app.config.settings import settings
+from src.app.models.settings import settings
 from src.app.services.qdrant_collection import create_collection
 from src.app.api.call_bot import call_bot_router
 from src.app.api.rag import train_rag_router

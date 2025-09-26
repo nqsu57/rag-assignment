@@ -1,5 +1,5 @@
 from typing import List, Dict
-from src.app.config.settings import settings
+from src.app.models.settings import settings
 
 def build_prompt(query: str, hits: List[Dict], max_chars: int | None = None) -> str:
     max_chars = max_chars or settings.MAX_CONTEXT_CHARS

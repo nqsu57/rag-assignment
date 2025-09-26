@@ -3,7 +3,7 @@ from typing import List
 from qdrant_client import QdrantClient
 from qdrant_client.http import models as rest
 from sentence_transformers import SentenceTransformer
-from src.app.config.settings import settings
+from src.app.models.settings import settings
 from src.app.services.qdrant_collection import create_collection, recreate_collection
 from src.app.utils.logger import get_logger
 

@@ -4,7 +4,7 @@ from typing import List, Dict, Any, Optional
 from llama_index.core import SimpleDirectoryReader, Document
 from llama_index.core.node_parser import SimpleNodeParser, SentenceSplitter
 from src.app.utils.logger import get_logger
-from src.app.config.settings import settings 
+from src.app.models.settings import settings 
 
 logger = get_logger(__name__)
 
