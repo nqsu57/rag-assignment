@@ -5,7 +5,6 @@ from fastapi import FastAPI, Request, Depends
 from qdrant_client import QdrantClient
 from src.app.config.settings import settings
 from src.app.services.qdrant_collection import create_collection
-from src.app.api.routes_chunk import router_chunks
 from src.app.api.call_bot import call_bot_router
 
 
@@ -48,9 +47,7 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(title="Minimal RAG with FastAPI & Qdrant", version="1.0.0", lifespan=lifespan)
 
-app.include_router(router_chunks, prefix="/api")
 app.include_router(call_bot_router, prefix="/api")
-
 
 
 def get_qdrant_client(request: Request) -> QdrantClient:
