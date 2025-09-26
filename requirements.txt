@@ -6,3 +6,5 @@ python-dotenv
 pydantic-settings
 unstructured
 sentence-transformers
+python-multipart
+docx2txt
