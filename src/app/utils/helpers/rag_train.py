@@ -1,3 +1,4 @@
+from uuid import uuid5, NAMESPACE_DNS
 from pathlib import Path
 from typing import List
 import tempfile, shutil
@@ -34,22 +35,32 @@ def chunk_all_documents(tmp_dir: Path) -> list[dict]:
         use_sentence_splitter=False
     )
 
-def upsert_chunks_to_qdrant(chunks: list[dict], vectors: list[list[float]],
+def upsert_chunks_to_qdrant(chunks: list[dict], 
+                            vectors: list[list[float]],
                             file_hashes: dict[str, str]) -> int:
     qdrant = QdrantStore()
-    qdrant.ensure_collection(settings.QDRANT_COLLECTION, settings.EMBEDDING_DIM)
+    qdrant.ensure_collection(settings.QDRANT_COLLECTION, 
+                             settings.EMBEDDING_DIM)
 
-    ids, payloads = [], []
+    ids: list[str] = []
+    payloads: list[dict] = []
+
     for idx, c in enumerate(chunks):
         fname = c["metadata"].get("file_name", "")
         doc_hash = file_hashes.get(fname, "")
-        ids.append(f"{doc_hash}_{idx}")
+        uid = str(uuid5(NAMESPACE_DNS, f"{doc_hash}_{idx}"))
+        ids.append(uid)
         payloads.append({
             "text": c["text"],
             "metadata": {**c["metadata"], "doc_hash": doc_hash},
             "chunk_id": c["id"]
         })
-    return len(qdrant.upsert_points(settings.QDRANT_COLLECTION, vectors, payloads, ids=ids))
+    
+    return len(qdrant.upsert_points(settings.QDRANT_COLLECTION, 
+                                    vectors=vectors, 
+                                    payloads=payloads, 
+                                    ids=ids,
+                                    skip_existing=True))
 
 def cleanup_tmp(files: List[UploadFile], tmp_dir: Path) -> None:
     for f in files:

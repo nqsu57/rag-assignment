@@ -1,0 +1,6 @@
+**Embedding Models for Qdrant in RAG Pipelines**  
+Embedding models, such as those from Hugging Face’s `sentence-transformers` library, are critical for generating dense vector representations of text in Python-based retrieval-augmented generation (RAG) pipelines with Qdrant. 
+Models like `all-MiniLM-L6-v2` or `multi-qa-MiniLM-L6-cos-v1` transform text chunks into fixed-size vectors (e.g., 384 dimensions), capturing semantic meaning for storage in Qdrant’s vector database. 
+In Python, the process involves loading a model with `SentenceTransformer`, encoding document chunks or queries into embeddings, and upserting them into a Qdrant collection using `qdrant-client`.
+During retrieval, the same model embeds the query, enabling Qdrant’s HNSW indexing to find similar vectors for LLM context.
+These lightweight, efficient models balance performance and accuracy, making them ideal for scalable RAG applications, with Python’s `numpy` and `torch` libraries streamlining vector operations and model inference.

@@ -20,24 +20,42 @@ class QdrantStore:
         except Exception as e:
             raise RuntimeError(f"Qdrant ensure_collection failed: {e}") from e
 
-    def upsert_points(self, collection_name: str, vectors: List[List[float]], payloads: List[Dict[str, Any]], ids: List[str] | None = None, skip_existing: bool = True) -> List[str]:
+    def upsert_points(self, collection_name: str, 
+                      vectors: List[List[float]], 
+                      payloads: List[Dict[str, Any]], 
+                      ids: List[str] | None = None, 
+                      skip_existing: bool = True) -> List[str]:
         if len(vectors) != len(payloads):
             raise ValueError("vectors and payloads length mismatch")
         if ids and len(ids) != len(vectors):
             raise ValueError("ids length mismatch")
         
-        points = []
-        ids: List[str] = []
-        for i, vec in enumerate(vectors):
-            pid = str(uuid.uuid4())
-            ids.append(pid)
-            points.append(rest.PointStruct(id=pid, vector=vec, payload=payloads[i]))
-        self.client.upsert(collection_name=collection_name, points=points)
-        return ids
+        point_ids = ids if ids else [str(uuid.uuid4()) for _ in vectors]
+
+        points = [
+            rest.PointStruct(id=pid, vector=vec, payload=payloads[i])
+            for i, (pid, vec) in enumerate(zip(point_ids, vectors))
+        ]
+
+        if skip_existing and ids:
+            records = self.client.retrieve(
+                collection_name=collection_name,
+                ids=point_ids,
+                with_payload=False
+            )
+            existing_ids = {str(r.id) for r in records} 
+            points = [p for p in points if str(p.id) not in existing_ids]
+            point_ids = [str(p.id) for p in points]
+
+        if points:
+            self.client.upsert(collection_name=collection_name, points=points)
+
+        return point_ids
+
 
     def search(self, collection_name: str, query_vector: List[float], top_k: int = 5) -> List[Dict[str, Any]]:
         hits = self.client.search(collection_name=collection_name, query_vector=query_vector, limit=top_k, with_payload=True)
-        results: List[Dict[str, Any]] = []
-        for h in hits:
-            results.append({"id": str(h.id), "score": getattr(h, "score", None), "payload": h.payload or {}})
-        return results
+        return [
+            {"id": str(h.id), "score": getattr(h, "score", None), "payload": h.payload or {}}
+            for h in hits
+        ]
