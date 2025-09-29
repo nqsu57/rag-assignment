@@ -6,7 +6,6 @@ from src.app.utils.logger import get_logger
 logger = get_logger(__name__)
 
 def build_qdrant_client() -> QdrantClient:
-    """Trả về QdrantClient kết nối; raise nếu không kết nối được."""
     try:
         client = QdrantClient(host=settings.QDRANT_HOST, port=settings.QDRANT_PORT)
         logger.info("Connected to Qdrant %s:%s", settings.QDRANT_HOST, settings.QDRANT_PORT)

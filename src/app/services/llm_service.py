@@ -4,7 +4,6 @@ import time
 import requests
 
 def _mock_generate_answer(context_texts: List[str], query: str) -> str:
-    # Very simple "synthesis": cite context then answer unknown if none
     if not context_texts:
         return "I don't know."
     combined = " ".join(context_texts)

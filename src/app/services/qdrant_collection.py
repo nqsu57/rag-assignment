@@ -21,7 +21,6 @@ def create_collection(client: QdrantClient) -> None:
         logger.exception("Failed to create collection: %s", exc)
         raise
 
-
 def recreate_collection(client: QdrantClient) -> None:
     try:
         if client.collection_exists(settings.QDRANT_COLLECTION):
@@ -39,7 +38,6 @@ def recreate_collection(client: QdrantClient) -> None:
         logger.exception("Failed to recreate collection: %s", exc)
         raise
 
-"""Lấy thông tin cấu hình collection"""
 def get_collection_info(client: QdrantClient):
     try:
         return client.get_collection(settings.QDRANT_COLLECTION)

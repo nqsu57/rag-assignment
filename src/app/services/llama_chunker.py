@@ -49,25 +49,10 @@ def chunk_documents(
     logger.info(f"Parser produced {len(nodes)} nodes (chunks)")
 
     chunks: List[Dict[str, Any]] = []
-    # for i, node in enumerate(nodes):
-    #     # node likely has .text and .extra_info / .metadata depending on LlamaIndex version
-    #     text = getattr(node, "text", None) or getattr(node, "get_text", lambda: str(node))()
-    #     metadata = {}
-    #     # try common metadata attributes; keep it defensive
-    #     if hasattr(node, "doc_id"):
-    #         metadata["doc_id"] = getattr(node, "doc_id")
-    #     if hasattr(node, "extra_info"):
-    #         metadata.update(getattr(node, "extra_info") or {})
-    #     if hasattr(node, "metadata"):
-    #         # some versions store Document.metadata
-    #         metadata.update(getattr(node, "metadata") or {})
-
-    #     chunk_id = f"chunk-{i}"
-    #     chunks.append({"id": chunk_id, "text": text, "metadata": metadata})
 
     for i, node in enumerate(nodes):
         text = getattr(node, "text", None) or getattr(node, "get_text", lambda: str(node))()
-        # merge metadata: extra_info trước, metadata sau
+        #merge metadata: extra_info first, metadata second.
         meta: dict = {}
         if hasattr(node, "extra_info") and getattr(node, "extra_info"):
             meta.update(getattr(node, "extra_info"))

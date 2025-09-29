@@ -52,7 +52,6 @@ class QdrantStore:
 
         return point_ids
 
-
     def search(self, collection_name: str, query_vector: List[float], top_k: int = 5) -> List[Dict[str, Any]]:
         hits = self.client.search(collection_name=collection_name, query_vector=query_vector, limit=top_k, with_payload=True)
         return [

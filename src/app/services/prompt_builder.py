@@ -1,5 +1,6 @@
 from typing import List, Dict
 from src.app.models.settings import settings
+from src.app.utils.helpers.prompts import RAG_BASE_PROMPT
 
 def build_prompt(query: str, hits: List[Dict], max_chars: int | None = None) -> str:
     max_chars = max_chars or settings.MAX_CONTEXT_CHARS
@@ -15,9 +16,4 @@ def build_prompt(query: str, hits: List[Dict], max_chars: int | None = None) -> 
         parts.append(f"[{i}] {text}")
         used += len(text)
     context = "\n\n".join(parts) if parts else ""
-    prompt = (
-        "You are a helpful assistant. Use ONLY the context below to answer the question.\n"
-        "If the answer cannot be found in the context, reply exactly: 'I don't know.'\n\n"
-        f"CONTEXT:\n{context}\n\nQUESTION:\n{query}\n\nAnswer:"
-    )
-    return prompt
+    return RAG_BASE_PROMPT.format(context=context, query=query)

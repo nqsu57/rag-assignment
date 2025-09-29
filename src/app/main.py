@@ -15,10 +15,8 @@ logging.basicConfig(level=logging.INFO,
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    # Connecting to Qdrant
     client = QdrantClient(host=settings.QDRANT_HOST, port=settings.QDRANT_PORT) 
 
-    #retry/backoff nhỏ đề phòng Qdrant khởi chậm
     max_tries = 5
     for attempt in range(1, max_tries + 1):
         try:
@@ -30,13 +28,9 @@ async def lifespan(app: FastAPI):
             if attempt == max_tries:
                 logger.exception("Could not connect to Qdrant")
                 raise
-            await asyncio.sleep(1 * attempt)  # simple backoff
+            await asyncio.sleep(1 * attempt)
 
-    # gắn client để dùng trong route
     app.state.qdrant_client = client
-
-    # Nếu có bước init LlamaIndex (ví dụ build index), thực hiện tại đây.
-    # app.state.index = build_llama_index(...)
     yield
     logger.info("Shutting down FastAPI app – closing Qdrant client")
     client_close = getattr(client, "close", None)
@@ -58,9 +52,6 @@ def get_qdrant_client(request: Request) -> QdrantClient:
 
 @app.get("/health")
 async def health_check(client: QdrantClient = Depends(get_qdrant_client)):
-    """
-    Endpoint kiểm tra Qdrant có sẵn sàng.
-    """
     return {
         "status": "ok",
         "collection": settings.QDRANT_COLLECTION,

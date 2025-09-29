@@ -47,11 +47,11 @@ def seed_sample_texts(texts: List[str]) -> None:
 
     all_chunks = texts
 
-    #Encode thành vectors
+    #Encode into vectors
     vectors = model.encode(all_chunks, convert_to_numpy=True)
     assert vectors.shape[1] == model_dim, "Vector dimension mismatch with model."
 
-    # creat list PointStruct để upsert
+    #create a list of PointStruct for upsert
     points = [
         rest.PointStruct(
             id=uuid.uuid4().hex,
