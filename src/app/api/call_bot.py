@@ -27,7 +27,7 @@ async def call_bot(
 
     top_k = req.top_k or settings.TOP_K
     SIM_THRESHOLD = settings.SIM_THRESHOLD
-  
+    print("SIM_THRESHOLD:", SIM_THRESHOLD)  
     #embed query
     try:
         embeddings = await embed_texts([lower_query])
@@ -50,21 +50,23 @@ async def call_bot(
 
     #build prompt
     prompt = build_prompt(clean_query, hits, max_chars=settings.MAX_CONTEXT_CHARS)
+    print("Prompt: ", prompt)
 
     #call LLMs
     try:
         answer = await asyncio.to_thread(generate_answer, prompt, hits)
+        print()
     except Exception:
         logger.exception("LLM generation failed")
         raise HTTPException(status_code=502, detail="LLM service error")
-
+        
     #format retrieved metadata
     retrieved = [
         {
             "id": h.get("id"),
             "score": h.get("score"),
-            "source": h.get("payload", {}).get("source"),
-            "document_id": h.get("payload", {}).get("document_id"),
+            "source": h.get("payload", {}).get("metadata", {}).get("file_name"),
+            "document_id": h.get("payload", {}).get("metadata", {}).get("doc_hash"),
         }
         for h in hits
     ]

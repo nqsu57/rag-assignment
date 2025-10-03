@@ -1,7 +1,16 @@
-from typing import List
-from src.app.models.settings import settings
 import time
-import requests
+import os
+from dotenv import load_dotenv
+from typing import List, Dict
+from huggingface_hub import InferenceClient
+
+load_dotenv()
+HF_API_TOKEN = os.getenv("HF_API_TOKEN")
+HF_MODEL = os.getenv("HF_MODEL")
+MAX_NEW_TOKENS = int(os.getenv("MAX_NEW_TOKENS", "512"))
+TEMPERATURE = float(os.getenv("TEMPERATURE", "0.7"))
+TOP_P = float(os.getenv("TOP_P", "0.9"))
+
 
 def _mock_generate_answer(context_texts: List[str], query: str) -> str:
     if not context_texts:
@@ -10,30 +19,22 @@ def _mock_generate_answer(context_texts: List[str], query: str) -> str:
     summary = combined[:400]
     return f"Based on the context: {summary}... (concise answer based on provided context)."
 
-def generate_answer(prompt: str, hits: List[dict]) -> str:
-    """Sync function: generate answer. Caller can run in thread if needed."""
-    provider = settings.LLM_PROVIDER.lower()
-    if provider == "mock":
-        texts = [h["payload"].get("text", "") for h in hits]
-        return _mock_generate_answer(texts, prompt)
-    if provider == "hf":
-        url = f"https://api-inference.huggingface.co/models/{settings.HF_MODEL}"
-        headers = {"Authorization": f"Bearer {settings.HF_API_TOKEN}"}
-        resp = requests.post(url, headers=headers, json={"inputs": prompt}, timeout=60)
-        resp.raise_for_status()
-        data = resp.json()
-        if isinstance(data, list) and "generated_text" in data[0]:
-            return data[0]["generated_text"]
-        return str(data)
-    if provider == "openai":
-        import openai
-        if not settings.OPENAI_API_KEY:
-            raise RuntimeError("OpenAI API key not configured")
-        openai.api_key = settings.OPENAI_API_KEY
-        resp = openai.ChatCompletion.create(
-            model="gpt-4o-mini",
-            messages=[{"role": "user", "content": prompt}],
-            max_tokens=512
+def generate_answer(prompt: str, hits: List[Dict]) -> str:
+    client = InferenceClient(api_key=HF_API_TOKEN)
+    try:
+        messages = [
+            {"role": "system", "content": "You are a helpful assistant. Answer concisely."},
+            {"role": "user", "content": prompt},
+        ]
+
+        response = client.chat.completions.create(
+            model=HF_MODEL,
+            messages=messages,
+            temperature=TEMPERATURE,
+            top_p=TOP_P,
+            max_tokens=MAX_NEW_TOKENS,
         )
-        return resp.choices[0].message.content
-    raise RuntimeError(f"Unsupported LLM_PROVIDER: {settings.LLM_PROVIDER}")
+
+        return response.choices[0].message["content"].strip()
+    except Exception as e:
+        raise RuntimeError(f"LLM service error: {e}")
