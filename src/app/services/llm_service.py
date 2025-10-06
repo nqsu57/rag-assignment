@@ -6,6 +6,7 @@ from huggingface_hub import InferenceClient
 
 load_dotenv()
 HF_API_TOKEN = os.getenv("HF_API_TOKEN")
+print("HF_API_TOKEN", HF_API_TOKEN)
 HF_MODEL = os.getenv("HF_MODEL")
 MAX_NEW_TOKENS = int(os.getenv("MAX_NEW_TOKENS", "512"))
 TEMPERATURE = float(os.getenv("TEMPERATURE", "0.7"))
@@ -19,11 +20,20 @@ def _mock_generate_answer(context_texts: List[str], query: str) -> str:
     summary = combined[:400]
     return f"Based on the context: {summary}... (concise answer based on provided context)."
 
-def generate_answer(prompt: str, hits: List[Dict]) -> str:
-    client = InferenceClient(api_key=HF_API_TOKEN)
+
+def generate_answer(prompt: str) -> str:
+    client = InferenceClient(model=HF_MODEL, api_key=HF_API_TOKEN)
     try:
         messages = [
-            {"role": "system", "content": "You are a helpful assistant. Answer concisely."},
+            {
+                "role": "system",
+                "content": (
+                    "You are a helpful assistant.\n"
+                    "- Base your answer primarily on the given context.\n"
+                    "- If the answer is indirectly mentioned, implied, or phrased differently, you may infer it logically.\n"
+                    "- If you are certain the answer is not mentioned or cannot be inferred from the context, reply exactly: \"I don't know.\""
+                ),
+            },
             {"role": "user", "content": prompt},
         ]
 

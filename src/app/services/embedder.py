@@ -1,5 +1,4 @@
 from typing import List
-from src.app.models.settings import settings
 from sentence_transformers import SentenceTransformer
 
 model = SentenceTransformer("all-MiniLM-L6-v2")

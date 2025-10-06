@@ -1,11 +1,18 @@
+import uuid
+import os
+from dotenv import load_dotenv
 from qdrant_client import QdrantClient
 from qdrant_client.http import models as rest
 from typing import List, Dict, Any
-import uuid
 from src.app.models.settings import settings
 
+load_dotenv()
+QDRANT_HOST = os.getenv("QDRANT_HOST")
+QDRANT_PORT = int(os.getenv("QDRANT_PORT"))
+TOP_K = int(os.getenv("TOP_K", "5"))
+
 class QdrantStore:
-    def __init__(self, host: str = settings.QDRANT_HOST, port: int = settings.QDRANT_PORT):
+    def __init__(self, host: str = QDRANT_HOST, port: int = QDRANT_PORT):
         self.client = QdrantClient(host=host, port=port)
 
     def ensure_collection(self, collection_name: str, vector_size: int) -> None:
@@ -52,8 +59,13 @@ class QdrantStore:
 
         return point_ids
 
-    def search(self, collection_name: str, query_vector: List[float], top_k: int = 5) -> List[Dict[str, Any]]:
-        hits = self.client.search(collection_name=collection_name, query_vector=query_vector, limit=top_k, with_payload=True)
+    def search(self, collection_name: str, query_vector: List[float], top_k: int | None = None) -> List[Dict[str, Any]]:
+        top_k = top_k or TOP_K
+        hits = self.client.search(collection_name=collection_name, 
+                                  query_vector=query_vector, 
+                                  limit=top_k, 
+                                  with_payload=True)
+        
         return [
             {"id": str(h.id), "score": getattr(h, "score", None), "payload": h.payload or {}}
             for h in hits

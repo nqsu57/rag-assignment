@@ -1,15 +1,17 @@
-from pathlib import Path
 import json
+import os
+from dotenv import load_dotenv
+from pathlib import Path
 from typing import List, Dict, Any, Optional
 from llama_index.core import SimpleDirectoryReader, Document
 from llama_index.core.node_parser import SimpleNodeParser, SentenceSplitter
 from src.app.utils.logger import get_logger
-from src.app.models.settings import settings 
 
 logger = get_logger(__name__)
+load_dotenv()
 
-DEFAULT_CHUNK_SIZE = getattr(settings, "chunk_size", 512)
-DEFAULT_CHUNK_OVERLAP = getattr(settings, "chunk_overlap", 50)
+CHUNK_SIZE = int(os.getenv("CHUNK_SIZE"))
+CHUNK_OVERLAP = int(os.getenv("CHUNK_OVERLAP"))
 
 
 def load_documents_from_dir(data_dir: Path) -> List[Document]:
@@ -33,8 +35,8 @@ def chunk_documents(
     use_sentence_splitter: bool = False,
 ) -> List[Dict[str, Any]]:
  
-    effective_chunk_size = chunk_size or DEFAULT_CHUNK_SIZE
-    effective_overlap = chunk_overlap or DEFAULT_CHUNK_OVERLAP
+    effective_chunk_size = chunk_size or CHUNK_SIZE
+    effective_overlap = chunk_overlap or CHUNK_OVERLAP
 
     if effective_overlap >= effective_chunk_size:
         raise ValueError("chunk_overlap must be smaller than chunk_size")
@@ -46,7 +48,7 @@ def chunk_documents(
         parser = SimpleNodeParser.from_defaults(chunk_size=effective_chunk_size, chunk_overlap=effective_overlap)
 
     nodes = parser.get_nodes_from_documents(docs)
-    logger.info(f"Parser produced {len(nodes)} nodes (chunks)")
+    logger.info(f"Parser produced {len(nodes)} nodes` (chunks)")
 
     chunks: List[Dict[str, Any]] = []
 
