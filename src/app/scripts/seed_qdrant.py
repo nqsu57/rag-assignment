@@ -13,7 +13,7 @@ load_dotenv()
 QDRANT_HOST = os.getenv("QDRANT_HOST")
 QDRANT_PORT = int(os.getenv("QDRANT_PORT"))
 EMBED_MODEL = os.getenv("EMBED_MODEL")
-QDRANT_COLLECTION = os.get("QDRANT_COLLECTION")
+QDRANT_COLLECTION = os.getenv("QDRANT_COLLECTION")
 
 
 
