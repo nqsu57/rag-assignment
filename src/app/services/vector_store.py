@@ -4,7 +4,6 @@ from dotenv import load_dotenv
 from qdrant_client import QdrantClient
 from qdrant_client.http import models as rest
 from typing import List, Dict, Any
-from src.app.models.settings import settings
 
 load_dotenv()
 QDRANT_HOST = os.getenv("QDRANT_HOST")

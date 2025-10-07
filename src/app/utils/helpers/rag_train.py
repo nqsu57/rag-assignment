@@ -1,16 +1,23 @@
+import os
+from dotenv import load_dotenv
 from uuid import uuid5, NAMESPACE_DNS
 from pathlib import Path
 from typing import List
 import tempfile, shutil
 from fastapi import APIRouter, UploadFile, File, HTTPException
-from src.app.models.settings import settings
 from src.app.utils.logger import get_logger
 from src.app.services.vector_store import QdrantStore
 from src.app.services.llama_chunker import load_documents_from_dir, chunk_documents
 from src.app.utils.helpers.hashing import compute_hash
 
 logger = get_logger(__name__)
+load_dotenv()
+
 ALLOWED_FILE = {".txt", ".pdf", ".docx"}
+QDRANT_COLLECTION = os.getenv("QDRANT_COLLECTION")
+EMBEDDING_DIM = int(os.getenv("EMBEDDING_DIM"))
+CHUNK_SIZE = int(os.getenv("CHUNK_SIZE"))
+CHUNK_OVERLAP = int(os.getenv("CHUNK_OVERLAP"))
 
 def save_and_hash_files(files: List[UploadFile], tmp_dir: Path) -> dict[str, str]:
     hashes: dict[str, str] = {}
@@ -30,8 +37,8 @@ def chunk_all_documents(tmp_dir: Path) -> list[dict]:
         raise HTTPException(400, "No documents loaded")
     return chunk_documents(
         docs,
-        chunk_size=settings.CHUNK_SIZE,
-        chunk_overlap=settings.CHUNK_OVERLAP,
+        chunk_size=CHUNK_SIZE,
+        chunk_overlap=CHUNK_OVERLAP,
         use_sentence_splitter=False
     )
 
@@ -39,8 +46,7 @@ def upsert_chunks_to_qdrant(chunks: list[dict],
                             vectors: list[list[float]],
                             file_hashes: dict[str, str]) -> int:
     qdrant = QdrantStore()
-    qdrant.ensure_collection(settings.QDRANT_COLLECTION, 
-                             settings.EMBEDDING_DIM)
+    qdrant.ensure_collection(QDRANT_COLLECTION, EMBEDDING_DIM)
 
     ids: list[str] = []
     payloads: list[dict] = []
@@ -56,7 +62,7 @@ def upsert_chunks_to_qdrant(chunks: list[dict],
             "chunk_id": c["id"]
         })
     
-    return len(qdrant.upsert_points(settings.QDRANT_COLLECTION, 
+    return len(qdrant.upsert_points(QDRANT_COLLECTION, 
                                     vectors=vectors, 
                                     payloads=payloads, 
                                     ids=ids,

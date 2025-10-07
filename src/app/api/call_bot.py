@@ -17,7 +17,6 @@ load_dotenv()
 
 TOP_K = int(os.getenv("TOP_K"))
 SIM_THRESHOLD = float(os.getenv("SIM_THRESHOLD"))
-print(SIM_THRESHOLD)
 QDRANT_COLLECTION = os.getenv("QDRANT_COLLECTION")
 EMBEDDING_DIM = os.getenv("EMBEDDING_DIM")
 
@@ -43,20 +42,18 @@ async def call_bot(req: CallBotRequest, store: QdrantStore = Depends(get_qdrant_
     try:
         store.ensure_collection(QDRANT_COLLECTION, EMBEDDING_DIM)
         hits = store.search(QDRANT_COLLECTION, query_vec, top_k=top_k)
-        print("hits", hits)
     except Exception:
         logger.exception("Vector search failed")
         raise HTTPException(status_code=503, detail="Vector search error")
     
     hits = [h for h in hits if h.get("score", 0.0) >= SIM_THRESHOLD]
-    # print("hits", hits)
 
     if not hits:
         return CallBotResponse(answer="No relevant context found.", retrieved=[])
 
     #build prompt
     prompt = build_prompt(normalize_query, hits)
-    print("prompt", prompt)
+
 
     #call LLMs
     try:

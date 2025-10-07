@@ -3,8 +3,6 @@ Team Members at S3 Office:
 1. Name: Phan Thanh Binh
    Role: Developer
    Experience: Over 10 years
-   Position: Supervisor
-   Supervisor: Chinh Nguyen
 
 2. Name: Nguyen Thi Ngoc Nga
    Role: Developer, Secretary, Office Treasurer

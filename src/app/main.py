@@ -1,13 +1,18 @@
-from contextlib import asynccontextmanager
 import asyncio
 import logging
+import os
+from dotenv import load_dotenv
+from contextlib import asynccontextmanager
 from fastapi import FastAPI, Request, Depends
 from qdrant_client import QdrantClient
-from src.app.models.settings import settings
 from src.app.services.qdrant_collection import create_collection
 from src.app.api.call_bot import call_bot_router
 from src.app.api.rag import train_rag_router
 
+load_dotenv()
+QDRANT_HOST = os.getenv("QDRANT_HOST")
+QDRANT_PORT = int(os.getenv("QDRANT_PORT"))
+QDRANT_COLLECTION = os.getenv("QDRANT_COLLECTION")
 
 logger = logging.getLogger(__name__)
 logging.basicConfig(level=logging.INFO,
@@ -15,13 +20,13 @@ logging.basicConfig(level=logging.INFO,
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    client = QdrantClient(host=settings.QDRANT_HOST, port=settings.QDRANT_PORT) 
+    client = QdrantClient(host=QDRANT_HOST, port=QDRANT_PORT) 
 
     max_tries = 5
     for attempt in range(1, max_tries + 1):
         try:
             create_collection(client)
-            logger.info("Qdrant collection ready: %s", settings.QDRANT_COLLECTION)
+            logger.info("Qdrant collection ready: %s", QDRANT_COLLECTION)
             break
         except Exception as exc:
             logger.warning("Qdrant not ready (%d/%d): %s", attempt, max_tries, exc)
@@ -54,6 +59,6 @@ def get_qdrant_client(request: Request) -> QdrantClient:
 async def health_check(client: QdrantClient = Depends(get_qdrant_client)):
     return {
         "status": "ok",
-        "collection": settings.QDRANT_COLLECTION,
+        "collection": QDRANT_COLLECTION,
         "qdrant_connected": client is not None,
     }

@@ -6,19 +6,10 @@ from huggingface_hub import InferenceClient
 
 load_dotenv()
 HF_API_TOKEN = os.getenv("HF_API_TOKEN")
-print("HF_API_TOKEN", HF_API_TOKEN)
 HF_MODEL = os.getenv("HF_MODEL")
 MAX_NEW_TOKENS = int(os.getenv("MAX_NEW_TOKENS", "512"))
 TEMPERATURE = float(os.getenv("TEMPERATURE", "0.7"))
 TOP_P = float(os.getenv("TOP_P", "0.9"))
-
-
-def _mock_generate_answer(context_texts: List[str], query: str) -> str:
-    if not context_texts:
-        return "I don't know."
-    combined = " ".join(context_texts)
-    summary = combined[:400]
-    return f"Based on the context: {summary}... (concise answer based on provided context)."
 
 
 def generate_answer(prompt: str) -> str:
