@@ -24,7 +24,7 @@ def delete_vector(request: Request, payload: DeleteVectorRequest):
     client: QdrantClient = request.app.state.qdrant_client
     try:
         filter_condition = build_doc_hash_filter(payload.doc_hash)
-    
+
         count_result = client.count(collection_name=COLLECTION_NAME,
                                     count_filter=filter_condition,
                                     exact=True)
