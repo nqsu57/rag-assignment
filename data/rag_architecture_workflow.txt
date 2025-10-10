@@ -1,0 +1,7 @@
+Retrieval-Augmented Generation (RAG) is a hybrid approach combining information retrieval and language generation to enhance the accuracy and relevance of large language model (LLM) outputs. 
+The architecture consists of three main components: a vector database (e.g., Qdrant), an embedding model (e.g., Hugging Face’s Sentence Transformers), and an LLM (e.g., Llama or GPT). 
+The workflow begins with chunking a large corpus of documents into smaller segments, typically 256–512 tokens, to maintain semantic coherence. 
+These chunks are converted into dense vector embeddings using the embedding model and stored in the vector database. 
+During inference, a user query is similarly embedded, and the vector database performs a similarity search (e.g., using cosine distance or HNSW indexing) to retrieve the most relevant chunks. 
+These retrieved chunks provide context, which is combined with the query and fed into the LLM to generate a grounded response, reducing hallucinations.
+This modular flow—chunking, embedding, storage, retrieval, and generation—enables scalable, context-aware applications like question answering or knowledge base systems.

@@ -1,0 +1,3 @@
+In RAG pipelines, LLaMA generates responses using context retrieved from Qdrant.
+Document chunks are embedded with Hugging Face’s `sentence-transformers` (e.g., `all-MiniLM-L6-v2`), stored in Qdrant, and retrieved via similarity search. 
+LLaMA then processes the query and context to produce accurate outputs, leveraging Python’s `qdrant-client` and `transformers` for seamless integration.

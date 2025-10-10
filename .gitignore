@@ -13,6 +13,6 @@ __pycache__/
 # Logs
 *.log
 
-# Bỏ qua output chunk
+# Ignore the output chunk
 out_chunks/
 chunks.json

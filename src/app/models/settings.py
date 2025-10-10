@@ -10,16 +10,18 @@ class Settings(BaseSettings):
     CHUNK_SIZE: int = 512
     CHUNK_OVERLAP: int = 50
 
-    LLM_PROVIDER: str = "mock"
+    LLM_PROVIDER: str = "hf"
     HF_API_TOKEN: str | None = None
-    HF_MODEL: str = "google/flan-t5-small"
+    HF_MODEL: str = "meta-llama/Llama-3.3-70B-Instruct"
     EMBED_MODEL: str = "all-MiniLM-L6-v2"
 
     TOP_K: int = 3
     MAX_CONTEXT_CHARS: int = 3000
-    SIM_THRESHOLD: float = 0.7
-    class Config:
-        env_file = ".env"
-        env_file_encoding = "utf-8"
+    SIM_THRESHOLD: float = 0.5
+    model_config = {
+        "env_file": ".env",
+        "env_file_encoding": "utf-8",
+        "extra": "ignore"
+    }
 
 settings = Settings()
