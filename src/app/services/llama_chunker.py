@@ -54,11 +54,9 @@ def chunk_documents(docs: List[Document],
                 parts = split_fallback(text, size, overlap)
                 # print("Use fallback")
             for p in parts:
-                chunks.append({
-                    "id": f"chunk-{chunk_id}",
-                    "text": p,
-                    "metadata": metadata,
-                })
+                chunks.append({"id": f"chunk-{chunk_id}",
+                               "text": p,
+                               "metadata": metadata})
                 chunk_id += 1
 
         except Exception as e:
