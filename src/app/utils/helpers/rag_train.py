@@ -39,7 +39,7 @@ def chunk_all_documents(tmp_dir: Path) -> list[dict]:
         docs,
         chunk_size=CHUNK_SIZE,
         chunk_overlap=CHUNK_OVERLAP,
-        use_sentence_splitter=False
+        mode="auto"
     )
 
 def upsert_chunks_to_qdrant(chunks: list[dict], 
