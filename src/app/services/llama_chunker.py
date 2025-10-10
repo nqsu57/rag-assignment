@@ -49,10 +49,10 @@ def chunk_documents(docs: List[Document],
                 parts = split_member_blocks(text)
             elif mode in ("auto", "sentence"):
                 parts = split_sentences(text, size, overlap)
-                print("Use sentences")
+                # print("Use sentences")
             else:
                 parts = split_fallback(text, size, overlap)
-                print("Use fallback")
+                # print("Use fallback")
             for p in parts:
                 chunks.append({
                     "id": f"chunk-{chunk_id}",

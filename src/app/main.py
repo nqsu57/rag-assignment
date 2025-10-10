@@ -8,6 +8,7 @@ from qdrant_client import QdrantClient
 from src.app.services.qdrant_collection import create_collection
 from src.app.api.call_bot import call_bot_router
 from src.app.api.rag import train_rag_router
+from src.app.api.vector import delete_vector_router
 
 load_dotenv()
 QDRANT_HOST = os.getenv("QDRANT_HOST")
@@ -49,6 +50,7 @@ app = FastAPI(title="Minimal RAG with FastAPI & Qdrant", version="1.0.0", lifesp
 
 app.include_router(call_bot_router, prefix="/api")
 app.include_router(train_rag_router, prefix="/api")
+app.include_router(delete_vector_router, prefix="/api")
 
 
 def get_qdrant_client(request: Request) -> QdrantClient:
