@@ -16,7 +16,7 @@ delete_vector_router = APIRouter()
 QDRANT_HOST = os.getenv("QDRANT_HOST")
 QDRANT_PORT = int(os.getenv("QDRANT_PORT"))
 COLLECTION_NAME = os.getenv("QDRANT_COLLECTION")
-print(COLLECTION_NAME)
+# print(COLLECTION_NAME)
 
 
 @delete_vector_router.post("/delete-vector", response_model=DeleteVectorResponse)
