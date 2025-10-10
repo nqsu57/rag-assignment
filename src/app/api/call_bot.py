@@ -54,7 +54,6 @@ async def call_bot(req: CallBotRequest, store: QdrantStore = Depends(get_qdrant_
     #build prompt
     prompt = build_prompt(normalize_query, hits)
 
-
     #call LLMs
     try:
         answer = await asyncio.to_thread(generate_answer, prompt)

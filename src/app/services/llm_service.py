@@ -17,7 +17,7 @@ def generate_answer(prompt: str) -> str:
     try:
         messages = [
             {
-                "role": "system",
+                "role": "assistant",
                 "content": (
                     "You are a helpful assistant.\n"
                     "- Base your answer primarily on the given context.\n"
