@@ -4,3 +4,10 @@ qdrant-client
 llama-index
 python-dotenv
 pydantic-settings
+unstructured
+sentence-transformers
+python-multipart
+docx2txt
+huggingface_hub
+load_dotenv
+torch

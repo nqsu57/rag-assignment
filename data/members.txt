@@ -1,0 +1,45 @@
+Team Members at S3 Office:
+
+1. Name: Phan Thanh Binh
+   Role: Developer
+   Experience: Over 10 years
+
+2. Name: Nguyen Thi Ngoc Nga
+   Role: Developer, Secretary, Office Treasurer
+   Experience: 3 years
+
+3. Name: Ngo Quoc Su
+   Role: Associate Developer
+   Experience: 3 months
+
+4. Name: Truong Van Bao
+   Role: Associate Developer
+   Experience: 3 months
+
+5. Name: Nguyen Ngoc Minh Yen
+   Role: QC Engineer
+   Experience: 3 years
+
+6. Name: Huynh Tuan Duy
+   Role: Developer
+   Experience: 3 years
+
+7. Name: Nguyen Phat Tai
+   Role: Developer
+   Experience: 3 years
+
+8. Name: Le Quang Bao
+   Role: Associate Developer
+   Experience: 3 months
+
+9. Name: Tran Khoi Nguyen
+   Role: Developer
+   Experience: 3 years
+
+10. Name: Nguyen Duy Sy
+    Role: Developer
+    Experience: Over 3 years
+
+11. Name: Vo Minh Trung
+    Role: Developer
+    Experience: 3 years

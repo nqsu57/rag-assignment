@@ -5,3 +5,14 @@ venv/
 
 # Environment variables
 .env
+
+# Python cache
+__pycache__/
+*.py[cod]
+
+# Logs
+*.log
+
+# Ignore the output chunk
+out_chunks/
+chunks.json
